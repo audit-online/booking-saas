@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import ShareTab from '../components/Dashboard/ShareTab'
+import SchedulePlanner from '../components/Dashboard/SchedulePlanner'
 import './Dashboard.css'
 
 const Dashboard = () => {
@@ -1311,112 +1312,7 @@ const Dashboard = () => {
 
         {/* PLANNING */}
         {activeTab === 'planning' && (
-          <div className="dashboard-section">
-            <h3 className="dashboard-section-title">📋 Planning des Employés</h3>
-
-            {/* Sélecteur d'employé */}
-            <div className="dashboard-form">
-              <div className="dashboard-form-group">
-                <label className="dashboard-label">Choisir un employé :</label>
-                <select
-                  value={selectedEmployee || ''}
-                  onChange={(e) => setSelectedEmployee(e.target.value)}
-                  className="dashboard-select"
-                >
-                  <option value="">-- Sélectionnez --</option>
-                  {employees.map(emp => (
-                    <option key={emp.id} value={emp.id}>
-                      {emp.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            {/* Configuration horaires employé */}
-            {selectedEmployee && (
-              <div className="dashboard-form">
-                <h3 className="dashboard-section-title">Horaires de {employees.find(e => e.id === selectedEmployee)?.name}</h3>
-                <p className="dashboard-team-description">
-                  Définissez les horaires de travail de cet employé. Les créneaux de réservation seront générés automatiquement.
-                </p>
-
-                {[
-                  { day: 'monday', label: 'Lundi' },
-                  { day: 'tuesday', label: 'Mardi' },
-                  { day: 'wednesday', label: 'Mercredi' },
-                  { day: 'thursday', label: 'Jeudi' },
-                  { day: 'friday', label: 'Vendredi' },
-                  { day: 'saturday', label: 'Samedi' },
-                  { day: 'sunday', label: 'Dimanche' }
-                ].map(({ day, label }) => (
-                  <div key={day} className="dashboard-day-row">
-                    <div className="dashboard-day-checkbox">
-                      <input
-                        type="checkbox"
-                        checked={employeeSchedules[selectedEmployee]?.[day]?.enabled || false}
-                        onChange={(e) => handleScheduleChange(selectedEmployee, day, 'enabled', e.target.checked)}
-                        className="dashboard-checkbox"
-                      />
-                      <div className={`dashboard-day-name ${!employeeSchedules[selectedEmployee]?.[day]?.enabled ? 'dashboard-day-name-closed' : ''}`}>
-                        {label}
-                      </div>
-                    </div>
-
-                    {employeeSchedules[selectedEmployee]?.[day]?.enabled && (
-                      <div className="dashboard-day-inputs">
-                        <input
-                          type="time"
-                          value={employeeSchedules[selectedEmployee]?.[day]?.start || '09:00'}
-                          onChange={(e) => handleScheduleChange(selectedEmployee, day, 'start', e.target.value)}
-                          className="dashboard-time-input"
-                        />
-                        <span className="dashboard-time-separator">-</span>
-                        <input
-                          type="time"
-                          value={employeeSchedules[selectedEmployee]?.[day]?.end || '18:00'}
-                          onChange={(e) => handleScheduleChange(selectedEmployee, day, 'end', e.target.value)}
-                          className="dashboard-time-input"
-                        />
-                      </div>
-                    )}
-
-                    {!employeeSchedules[selectedEmployee]?.[day]?.enabled && (
-                      <div className="dashboard-day-closed-label">En repos</div>
-                    )}
-                  </div>
-                ))}
-
-                <div className="dashboard-hours-footer">
-                  <button
-                    onClick={() => saveEmployeeSchedule(selectedEmployee)}
-                    className="dashboard-btn-primary"
-                  >
-                    💾 Enregistrer les horaires
-                  </button>
-                  <p className="dashboard-hours-note">
-                    ℹ️ Les modifications sont enregistrées automatiquement
-                  </p>
-                </div>
-              </div>
-            )}
-
-            {!selectedEmployee && employees.length > 0 && (
-              <div className="dashboard-empty-state">
-                <div className="dashboard-empty-icon">👥</div>
-                <p className="dashboard-empty-text">Sélectionnez un employé</p>
-                <p className="dashboard-empty-subtext">Choisissez un employé dans la liste ci-dessus pour configurer ses horaires</p>
-              </div>
-            )}
-
-            {employees.length === 0 && (
-              <div className="dashboard-empty-state">
-                <div className="dashboard-empty-icon">👥</div>
-                <p className="dashboard-empty-text">Aucun employé pour le moment</p>
-                <p className="dashboard-empty-subtext">Ajoutez des employés dans l'onglet Équipe</p>
-              </div>
-            )}
-          </div>
+          <SchedulePlanner />
         )}
 
       </div>
