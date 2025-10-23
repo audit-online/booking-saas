@@ -11,6 +11,19 @@ export default function SchedulePlanner() {
   const [loading, setLoading] = useState(true)
   const [selectedWeek, setSelectedWeek] = useState(0) // 0 = semaine courante
 
+  // États pour la configuration des emplois du temps
+  const [selectedEmployeeId, setSelectedEmployeeId] = useState('')
+  const [editingSchedule, setEditingSchedule] = useState({
+    1: { enabled: false, start: '09:00', end: '18:00' },
+    2: { enabled: false, start: '09:00', end: '18:00' },
+    3: { enabled: false, start: '09:00', end: '18:00' },
+    4: { enabled: false, start: '09:00', end: '18:00' },
+    5: { enabled: false, start: '09:00', end: '18:00' },
+    6: { enabled: false, start: '09:00', end: '18:00' },
+    0: { enabled: false, start: '09:00', end: '18:00' }
+  })
+  const [saveMessage, setSaveMessage] = useState('')
+
   const daysOfWeek = [
     { id: 1, name: 'Lundi', short: 'Lun' },
     { id: 2, name: 'Mardi', short: 'Mar' },
@@ -44,6 +57,36 @@ export default function SchedulePlanner() {
   }
 
   const weekDates = getWeekDates()
+
+  // Charger les horaires de l'employé sélectionné
+  useEffect(() => {
+    if (selectedEmployeeId && employeeSchedules[selectedEmployeeId]) {
+      const schedule = employeeSchedules[selectedEmployeeId]
+      const newEditingSchedule = {}
+
+      daysOfWeek.forEach(day => {
+        const daySchedule = schedule[day.id]
+        newEditingSchedule[day.id] = {
+          enabled: daySchedule?.is_working || false,
+          start: daySchedule?.start_time || '09:00',
+          end: daySchedule?.end_time || '18:00'
+        }
+      })
+
+      setEditingSchedule(newEditingSchedule)
+    } else {
+      // Réinitialiser
+      setEditingSchedule({
+        1: { enabled: false, start: '09:00', end: '18:00' },
+        2: { enabled: false, start: '09:00', end: '18:00' },
+        3: { enabled: false, start: '09:00', end: '18:00' },
+        4: { enabled: false, start: '09:00', end: '18:00' },
+        5: { enabled: false, start: '09:00', end: '18:00' },
+        6: { enabled: false, start: '09:00', end: '18:00' },
+        0: { enabled: false, start: '09:00', end: '18:00' }
+      })
+    }
+  }, [selectedEmployeeId, employeeSchedules])
 
   useEffect(() => {
     if (user) {
@@ -215,39 +258,54 @@ export default function SchedulePlanner() {
     return 'Fermé'
   }
 
-  const handleUpdateSchedule = async (employeeId, dayId, field, value) => {
-    const schedule = employeeSchedules[employeeId] || {}
-    const daySchedule = schedule[dayId]
+  // Sauvegarder les horaires de l'employé
+  const handleSaveEmployeeSchedule = async () => {
+    if (!selectedEmployeeId) {
+      setSaveMessage('Veuillez sélectionner un employé')
+      setTimeout(() => setSaveMessage(''), 3000)
+      return
+    }
 
     try {
-      if (daySchedule && daySchedule.id) {
-        // Update
-        const { error } = await supabase
-          .from('availability')
-          .update({ [field]: value })
-          .eq('id', daySchedule.id)
+      const schedule = employeeSchedules[selectedEmployeeId] || {}
 
-        if (error) throw error
-      } else {
-        // Insert
-        const { error } = await supabase
-          .from('availability')
-          .insert({
-            employee_id: employeeId,
-            day_of_week: dayId,
-            [field]: value,
-            is_working: field === 'is_working' ? value : true,
-            start_time: field === 'start_time' ? value : '09:00',
-            end_time: field === 'end_time' ? value : '18:00'
-          })
+      for (const dayId of Object.keys(editingSchedule)) {
+        const dayIdNum = parseInt(dayId)
+        const dayData = editingSchedule[dayIdNum]
+        const existingDay = schedule[dayIdNum]
 
-        if (error) throw error
+        if (existingDay && existingDay.id) {
+          // Update
+          await supabase
+            .from('availability')
+            .update({
+              is_working: dayData.enabled,
+              start_time: dayData.start,
+              end_time: dayData.end
+            })
+            .eq('id', existingDay.id)
+        } else {
+          // Insert
+          await supabase
+            .from('availability')
+            .insert({
+              employee_id: selectedEmployeeId,
+              day_of_week: dayIdNum,
+              is_working: dayData.enabled,
+              start_time: dayData.start,
+              end_time: dayData.end
+            })
+        }
       }
 
-      // Recharger
-      await fetchEmployeeSchedule(employeeId)
+      // Recharger les données
+      await fetchEmployeeSchedule(selectedEmployeeId)
+      setSaveMessage('✓ Horaires enregistrés avec succès !')
+      setTimeout(() => setSaveMessage(''), 3000)
     } catch (error) {
-      console.error('Erreur update schedule:', error)
+      console.error('Erreur sauvegarde horaires:', error)
+      setSaveMessage('✗ Erreur lors de la sauvegarde')
+      setTimeout(() => setSaveMessage(''), 3000)
     }
   }
 
@@ -301,59 +359,67 @@ export default function SchedulePlanner() {
         {/* Légende des couleurs */}
         <div className="flex items-center space-x-6 text-sm">
           <div className="flex items-center space-x-2">
-            <div className="w-4 h-4 bg-green-100 border-2 border-green-300 rounded"></div>
-            <span className="text-gray-700">{"< 33h (Normal)"}</span>
+            <span className="text-xl">🟩</span>
+            <span className="text-gray-700">Employé présent</span>
           </div>
           <div className="flex items-center space-x-2">
-            <div className="w-4 h-4 bg-orange-100 border-2 border-orange-300 rounded"></div>
-            <span className="text-gray-700">33-35h (Attention)</span>
+            <span className="text-xl">🟥</span>
+            <span className="text-gray-700">Employé en repos/congé</span>
           </div>
           <div className="flex items-center space-x-2">
-            <div className="w-4 h-4 bg-red-100 border-2 border-red-300 rounded"></div>
-            <span className="text-gray-700">{"> 35h (Dépassement)"}</span>
-          </div>
-          <div className="flex items-center space-x-2">
-            <div className="w-4 h-4 bg-blue-100 border-2 border-blue-300 rounded"></div>
+            <span className="text-xl">🟦</span>
             <span className="text-gray-700">Rendez-vous client</span>
           </div>
+          <div className="flex items-center space-x-2">
+            <span className="text-xl">🟨</span>
+            <span className="text-gray-700">Horaires d'ouverture du salon</span>
+          </div>
         </div>
       </div>
 
-      {/* Amplitude d'ouverture du commerce */}
-      <div className="bg-white rounded-lg shadow-md p-6">
-        <h3 className="text-lg font-bold text-gray-900 mb-4">Horaires d'ouverture du commerce</h3>
-        <div className="grid grid-cols-7 gap-4">
-          {weekDates.map(({ dayId, formatted, date }) => {
-            const dayName = daysOfWeek.find(d => d.id === dayId)?.short || ''
-            const isOpen = isSalonOpen(dayId)
-
-            return (
-              <div
-                key={dayId}
-                className={`p-3 rounded-lg border-2 text-center ${
-                  isOpen ? 'bg-blue-50 border-blue-300' : 'bg-gray-100 border-gray-300'
-                }`}
-              >
-                <div className="font-bold text-sm text-gray-900">{dayName}</div>
-                <div className="text-xs text-gray-600 mb-2">{formatted}</div>
-                <div className={`text-xs font-medium ${isOpen ? 'text-blue-900' : 'text-gray-600'}`}>
-                  {getSalonHours(dayId)}
-                </div>
-              </div>
-            )
-          })}
-        </div>
-      </div>
-
-      {/* Planning des employés */}
+      {/* SECTION 1 : TABLEAU DE PLANNING VISUEL */}
       <div className="bg-white rounded-lg shadow-md overflow-hidden">
-        <div className="p-6 border-b bg-gray-50">
-          <h3 className="text-lg font-bold text-gray-900">Emplois du temps des salariés</h3>
+        <div className="p-6 border-b bg-gradient-to-r from-blue-50 to-purple-50">
+          <h3 className="text-lg font-bold text-gray-900 flex items-center">
+            <span className="text-2xl mr-2">📊</span>
+            TABLEAU PLANNING VISUEL
+          </h3>
           <p className="text-sm text-gray-600 mt-1">
-            Durée légale : 35 heures hebdomadaires maximum
+            Vue d'ensemble des présences et rendez-vous de la semaine
           </p>
         </div>
 
+        {/* Horaires d'ouverture du salon (JAUNE) */}
+        <div className="p-6 border-b bg-yellow-50">
+          <h4 className="font-bold text-gray-900 mb-3 flex items-center">
+            <span className="text-xl mr-2">🟨</span>
+            Horaires d'ouverture du salon
+          </h4>
+          <div className="grid grid-cols-7 gap-3">
+            {weekDates.map(({ dayId, formatted }) => {
+              const dayName = daysOfWeek.find(d => d.id === dayId)?.short || ''
+              const isOpen = isSalonOpen(dayId)
+              const hours = getSalonHours(dayId)
+
+              return (
+                <div
+                  key={dayId}
+                  className={`p-3 rounded-lg border-2 text-center ${
+                    isOpen ? 'bg-yellow-100 border-yellow-400' : 'bg-gray-100 border-gray-300'
+                  }`}
+                >
+                  <div className="font-bold text-sm text-gray-900">{dayName}</div>
+                  <div className="text-xs text-gray-600 mb-1">{formatted}</div>
+                  <div className={`text-xs font-bold ${isOpen ? 'text-yellow-900' : 'text-gray-600'}`}>
+                    {hours}
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+
+        {/* Tableau des employés */}
         {employees.length === 0 ? (
           <div className="p-8 text-center text-gray-500">
             <p>Aucun employé actif. Ajoutez des employés dans l'onglet "Équipe".</p>
@@ -369,7 +435,7 @@ export default function SchedulePlanner() {
                   {weekDates.map(({ dayId, formatted }) => {
                     const dayName = daysOfWeek.find(d => d.id === dayId)?.short || ''
                     return (
-                      <th key={dayId} className="px-3 py-3 text-center text-xs font-bold text-gray-900 min-w-[140px]">
+                      <th key={dayId} className="px-3 py-3 text-center text-xs font-bold text-gray-900 min-w-[150px]">
                         <div>{dayName}</div>
                         <div className="text-gray-600 font-normal">{formatted}</div>
                       </th>
@@ -399,57 +465,52 @@ export default function SchedulePlanner() {
                         const dayAppointments = getAppointmentsForEmployeeAndDay(employee.id, dateString)
 
                         return (
-                          <td key={dayId} className="px-2 py-2 text-center">
+                          <td key={dayId} className="px-2 py-2">
                             {!isSalonOpenDay ? (
-                              <div className="text-xs text-gray-500 italic">Fermé</div>
+                              <div className="text-center p-3 bg-gray-100 rounded-lg">
+                                <div className="text-xs text-gray-500 italic">Salon fermé</div>
+                              </div>
                             ) : (
-                              <div className="space-y-1">
-                                <div className="flex items-center justify-center space-x-1">
-                                  <input
-                                    type="checkbox"
-                                    checked={isWorking || false}
-                                    onChange={(e) => handleUpdateSchedule(employee.id, dayId, 'is_working', e.target.checked)}
-                                    className="w-3 h-3"
-                                  />
-                                  <span className="text-xs text-gray-700">
-                                    {isWorking ? '✓' : '✗'}
-                                  </span>
-                                </div>
-
-                                {isWorking && (
-                                  <div className="space-y-1">
-                                    <input
-                                      type="time"
-                                      value={daySchedule?.start_time || '09:00'}
-                                      onChange={(e) => handleUpdateSchedule(employee.id, dayId, 'start_time', e.target.value)}
-                                      className="w-full text-xs px-1 py-1 border rounded"
-                                    />
-                                    <input
-                                      type="time"
-                                      value={daySchedule?.end_time || '18:00'}
-                                      onChange={(e) => handleUpdateSchedule(employee.id, dayId, 'end_time', e.target.value)}
-                                      className="w-full text-xs px-1 py-1 border rounded"
-                                    />
-
-                                    {daySchedule && (
-                                      <div className="text-xs font-medium text-gray-700">
+                              <div className="space-y-2">
+                                {/* VERT = Présent ou ROUGE = Repos */}
+                                <div className={`p-3 rounded-lg border-2 text-center ${
+                                  isWorking
+                                    ? 'bg-green-100 border-green-400'
+                                    : 'bg-red-100 border-red-400'
+                                }`}>
+                                  {isWorking ? (
+                                    <>
+                                      <div className="text-lg mb-1">🟩</div>
+                                      <div className="text-xs font-bold text-green-900">
+                                        {daySchedule.start_time} - {daySchedule.end_time}
+                                      </div>
+                                      <div className="text-xs text-green-700 mt-1">
                                         {(calculateDayMinutes(daySchedule.start_time, daySchedule.end_time) / 60).toFixed(1)}h
                                       </div>
-                                    )}
-                                  </div>
-                                )}
+                                    </>
+                                  ) : (
+                                    <>
+                                      <div className="text-lg mb-1">🟥</div>
+                                      <div className="text-xs font-bold text-red-900">En repos</div>
+                                    </>
+                                  )}
+                                </div>
 
-                                {/* RDV clients */}
+                                {/* BLEU = RDV clients */}
                                 {dayAppointments.length > 0 && (
-                                  <div className="mt-2 space-y-1">
+                                  <div className="space-y-1">
                                     {dayAppointments.map(apt => (
                                       <div
                                         key={apt.id}
-                                        className="text-xs bg-blue-100 border border-blue-300 rounded px-1 py-1"
-                                        title={`${apt.client_name} - ${apt.services?.name || 'Service'}`}
+                                        className="p-2 bg-blue-100 border-2 border-blue-400 rounded-lg text-center"
                                       >
-                                        <div className="font-medium text-blue-900">{apt.appointment_time}</div>
-                                        <div className="text-blue-700 truncate">{apt.client_name}</div>
+                                        <div className="text-lg mb-1">🟦</div>
+                                        <div className="text-xs font-bold text-blue-900">
+                                          {apt.appointment_time}
+                                        </div>
+                                        <div className="text-xs text-blue-700 font-medium truncate">
+                                          {apt.client_name}
+                                        </div>
                                       </div>
                                     ))}
                                   </div>
@@ -475,6 +536,145 @@ export default function SchedulePlanner() {
                 })}
               </tbody>
             </table>
+          </div>
+        )}
+      </div>
+
+      {/* Séparateur visuel */}
+      <div className="border-t-4 border-gray-300"></div>
+
+      {/* SECTION 2 : CONFIGURATION EMPLOIS DU TEMPS */}
+      <div className="bg-white rounded-lg shadow-md p-6">
+        <div className="mb-6">
+          <h3 className="text-lg font-bold text-gray-900 flex items-center mb-2">
+            <span className="text-2xl mr-2">⚙️</span>
+            CONFIGURATION EMPLOIS DU TEMPS
+          </h3>
+          <p className="text-sm text-gray-600">
+            Sélectionnez un employé et configurez ses horaires de travail hebdomadaires
+          </p>
+        </div>
+
+        {/* Sélection employé */}
+        <div className="mb-6">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Sélectionner un employé
+          </label>
+          <select
+            value={selectedEmployeeId}
+            onChange={(e) => setSelectedEmployeeId(e.target.value)}
+            className="w-full max-w-md px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          >
+            <option value="">-- Choisir un employé --</option>
+            {employees.map(emp => (
+              <option key={emp.id} value={emp.id}>
+                {emp.name} {emp.specialty ? `(${emp.specialty})` : ''}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {selectedEmployeeId && (
+          <>
+            {/* Configuration des jours */}
+            <div className="space-y-4 mb-6">
+              <h4 className="font-medium text-gray-900">Jours de travail</h4>
+
+              {daysOfWeek.map(day => (
+                <div key={day.id} className="border border-gray-200 rounded-lg p-4">
+                  <div className="flex items-center mb-3">
+                    <input
+                      type="checkbox"
+                      id={`day-${day.id}`}
+                      checked={editingSchedule[day.id]?.enabled || false}
+                      onChange={(e) => {
+                        setEditingSchedule(prev => ({
+                          ...prev,
+                          [day.id]: {
+                            ...prev[day.id],
+                            enabled: e.target.checked
+                          }
+                        }))
+                      }}
+                      className="w-5 h-5 text-blue-600 rounded focus:ring-blue-500"
+                    />
+                    <label htmlFor={`day-${day.id}`} className="ml-3 font-medium text-gray-900">
+                      {day.name}
+                    </label>
+                  </div>
+
+                  {editingSchedule[day.id]?.enabled ? (
+                    <div className="grid grid-cols-2 gap-4 ml-8">
+                      <div>
+                        <label className="block text-sm text-gray-600 mb-1">Heure de début</label>
+                        <input
+                          type="time"
+                          value={editingSchedule[day.id]?.start || '09:00'}
+                          onChange={(e) => {
+                            setEditingSchedule(prev => ({
+                              ...prev,
+                              [day.id]: {
+                                ...prev[day.id],
+                                start: e.target.value
+                              }
+                            }))
+                          }}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm text-gray-600 mb-1">Heure de fin</label>
+                        <input
+                          type="time"
+                          value={editingSchedule[day.id]?.end || '18:00'}
+                          onChange={(e) => {
+                            setEditingSchedule(prev => ({
+                              ...prev,
+                              [day.id]: {
+                                ...prev[day.id],
+                                end: e.target.value
+                              }
+                            }))
+                          }}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                        />
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="ml-8 text-sm text-gray-500 italic">
+                      En repos
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+
+            {/* Bouton Enregistrer */}
+            <div className="flex items-center space-x-4">
+              <button
+                onClick={handleSaveEmployeeSchedule}
+                className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg flex items-center space-x-2 transition-colors"
+              >
+                <span>💾</span>
+                <span>Enregistrer les horaires</span>
+              </button>
+
+              {saveMessage && (
+                <div className={`px-4 py-2 rounded-lg ${
+                  saveMessage.includes('✓')
+                    ? 'bg-green-100 text-green-800'
+                    : 'bg-red-100 text-red-800'
+                }`}>
+                  {saveMessage}
+                </div>
+              )}
+            </div>
+          </>
+        )}
+
+        {!selectedEmployeeId && (
+          <div className="text-center py-8 text-gray-500">
+            Veuillez sélectionner un employé pour configurer ses horaires
           </div>
         )}
       </div>
