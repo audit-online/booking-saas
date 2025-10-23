@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import ShareTab from '../components/Dashboard/ShareTab'
+import './Dashboard.css'
 
 const Dashboard = () => {
   const navigate = useNavigate()
@@ -692,22 +693,22 @@ const Dashboard = () => {
     .reduce((sum, a) => sum + (a.services?.price || 0), 0)
 
   if (loading) {
-    return <div style={styles.loading}>Chargement...</div>
+    return <div className="dashboard-loading">Chargement...</div>
   }
 
   return (
-    <div style={styles.container}>
+    <div className="dashboard-container">
       {/* Header */}
-      <div style={styles.header}>
-        <div style={styles.headerContent}>
-          <h1 style={styles.logo}>
-            <span style={styles.logoBooking}>Booking</span>
-            <span style={styles.logoSaas}>SaaS</span>
-            <span style={styles.logoDashboard}>Dashboard</span>
+      <div className="dashboard-header">
+        <div className="dashboard-header-content">
+          <h1 className="dashboard-logo">
+            <span className="dashboard-logo-booking">Booking</span>
+            <span className="dashboard-logo-saas">SaaS</span>
+            <span className="dashboard-logo-dashboard">Dashboard</span>
           </h1>
-          <div style={styles.headerRight}>
-            <span style={styles.userEmail}>{user?.email}</span>
-            <button onClick={handleLogout} style={styles.logoutBtn}>
+          <div className="dashboard-header-right">
+            <span className="dashboard-user-email">{user?.email}</span>
+            <button onClick={handleLogout} className="dashboard-logout-btn">
               Déconnexion
             </button>
           </div>
@@ -716,132 +717,108 @@ const Dashboard = () => {
 
       {/* Trial Banner */}
       {trialDaysLeft > 0 && (
-        <div style={styles.trialBanner}>
+        <div className="dashboard-trial-banner">
           🎉 <strong>Essai gratuit - {trialDaysLeft} jours restants</strong>
-          <p style={styles.trialText}>
+          <p className="dashboard-trial-text">
             Votre essai se termine le {new Date(profile?.trial_end).toLocaleDateString('fr-FR')}
           </p>
         </div>
       )}
 
       {/* Bienvenue */}
-      <div style={styles.welcome}>
-        <h2 style={styles.welcomeTitle}>Dashboard</h2>
-        <p style={styles.welcomeText}>Bienvenue, {user?.email}</p>
+      <div className="dashboard-welcome">
+        <h2 className="dashboard-welcome-title">Dashboard</h2>
+        <p className="dashboard-welcome-text">Bienvenue, {user?.email}</p>
       </div>
 
       {/* Tabs */}
-      <div style={styles.tabs}>
+      <div className="dashboard-tabs">
         <button
           onClick={() => setActiveTab('overview')}
-          style={{
-            ...styles.tab,
-            ...(activeTab === 'overview' ? styles.tabActive : {})
-          }}
+          className={`dashboard-tab ${activeTab === 'overview' ? 'dashboard-tab-active' : ''}`}
         >
           📊 Vue d'ensemble
         </button>
         <button
           onClick={() => setActiveTab('appointments')}
-          style={{
-            ...styles.tab,
-            ...(activeTab === 'appointments' ? styles.tabActive : {})
-          }}
+          className={`dashboard-tab ${activeTab === 'appointments' ? 'dashboard-tab-active' : ''}`}
         >
           📅 Rendez-vous
         </button>
         <button
           onClick={() => setActiveTab('salon')}
-          style={{
-            ...styles.tab,
-            ...(activeTab === 'salon' ? styles.tabActive : {})
-          }}
+          className={`dashboard-tab ${activeTab === 'salon' ? 'dashboard-tab-active' : ''}`}
         >
           🏪 Infos salon
         </button>
         <button
           onClick={() => setActiveTab('services')}
-          style={{
-            ...styles.tab,
-            ...(activeTab === 'services' ? styles.tabActive : {})
-          }}
+          className={`dashboard-tab ${activeTab === 'services' ? 'dashboard-tab-active' : ''}`}
         >
           🛠️ Services
         </button>
         <button
           onClick={() => setActiveTab('hours')}
-          style={{
-            ...styles.tab,
-            ...(activeTab === 'hours' ? styles.tabActive : {})
-          }}
+          className={`dashboard-tab ${activeTab === 'hours' ? 'dashboard-tab-active' : ''}`}
         >
           🕐 Horaires
         </button>
         <button
           onClick={() => setActiveTab('share')}
-          style={{
-            ...styles.tab,
-            ...(activeTab === 'share' ? styles.tabActive : {})
-          }}
+          className={`dashboard-tab ${activeTab === 'share' ? 'dashboard-tab-active' : ''}`}
         >
           📢 Diffusion
         </button>
         <button
           onClick={() => setActiveTab('team')}
-          style={{
-            ...styles.tab,
-            ...(activeTab === 'team' ? styles.tabActive : {})
-          }}
+          className={`dashboard-tab ${activeTab === 'team' ? 'dashboard-tab-active' : ''}`}
         >
           👥 Équipe
         </button>
         <button
           onClick={() => setActiveTab('planning')}
-          style={{
-            ...styles.tab,
-            ...(activeTab === 'planning' ? styles.tabActive : {})
-          }}
+          className={`dashboard-tab ${activeTab === 'planning' ? 'dashboard-tab-active' : ''}`}
         >
           📅 Planning
         </button>
       </div>
 
       {/* Content */}
-      <div style={styles.content}>
+      <div className="dashboard-content">
         
         {/* VUE D'ENSEMBLE */}
         {activeTab === 'overview' && (
           <div>
-            <div style={styles.statsGrid}>
-              <div style={styles.statCard}>
-                <div style={styles.statIcon}>📅</div>
-                <div style={styles.statLabel}>RDV Aujourd'hui</div>
-                <div style={styles.statValue}>{todayAppointments}</div>
+            <div className="dashboard-stats-grid">
+              <div className="dashboard-stat-card">
+                <div className="dashboard-stat-icon">📅</div>
+                <div className="dashboard-stat-label">RDV Aujourd'hui</div>
+                <div className="dashboard-stat-value">{todayAppointments}</div>
               </div>
-              <div style={styles.statCard}>
-                <div style={styles.statIcon}>📊</div>
-                <div style={styles.statLabel}>Cette Semaine</div>
-                <div style={styles.statValue}>{weekAppointments}</div>
+              <div className="dashboard-stat-card">
+                <div className="dashboard-stat-icon">📊</div>
+                <div className="dashboard-stat-label">Cette Semaine</div>
+                <div className="dashboard-stat-value">{weekAppointments}</div>
               </div>
-              <div style={styles.statCard}>
-                <div style={styles.statIcon}>💰</div>
-                <div style={styles.statLabel}>Revenus du Mois</div>
-                <div style={styles.statValue}>{monthRevenue}€</div>
+              <div className="dashboard-stat-card">
+                <div className="dashboard-stat-icon">💰</div>
+                <div className="dashboard-stat-label">Revenus du Mois</div>
+                <div className="dashboard-stat-value">{monthRevenue}€</div>
               </div>
             </div>
 
-            <div style={styles.section}>
-              <h3 style={styles.sectionTitle}>Prochains Rendez-vous</h3>
+            <div className="dashboard-section">
+              <h3 className="dashboard-section-title">Prochains Rendez-vous</h3>
               {appointments.filter(a => a.status === 'confirmed').slice(0, 5).map(apt => (
-                <div key={apt.id} style={styles.appointmentItem}>
+                <div key={apt.id} className="dashboard-appointment-item">
                   <div>
                     <strong>{apt.client_name}</strong> - {apt.services?.name}
                     <br />
-                    <span style={styles.appointmentDate}>
+                    <span className="dashboard-appointment-date">
                       {new Date(apt.appointment_date).toLocaleDateString('fr-FR')} à {apt.appointment_time}
                     </span>
                   </div>
-                  <span style={styles.appointmentPrice}>{apt.services?.price}€</span>
+                  <span className="dashboard-appointment-price">{apt.services?.price}€</span>
                 </div>
               ))}
             </div>
@@ -850,29 +827,28 @@ const Dashboard = () => {
 
         {/* RENDEZ-VOUS */}
         {activeTab === 'appointments' && (
-          <div style={styles.section}>
-            <h3 style={styles.sectionTitle}>Tous les Rendez-vous</h3>
+          <div className="dashboard-section">
+            <h3 className="dashboard-section-title">Tous les Rendez-vous</h3>
             {appointments.map(apt => (
-              <div key={apt.id} style={styles.appointmentCard}>
-                <div style={styles.appointmentHeader}>
+              <div key={apt.id} className="dashboard-appointment-card">
+                <div className="dashboard-appointment-header">
                   <div>
-                    <strong style={styles.clientName}>{apt.client_name}</strong>
-                    <div style={styles.appointmentDetails}>
+                    <strong className="dashboard-client-name">{apt.client_name}</strong>
+                    <div className="dashboard-appointment-details">
                       📧 {apt.client_email} • ☎️ {apt.client_phone || 'Non renseigné'}
                     </div>
                   </div>
-                  <span style={{
-                    ...styles.statusBadge,
-                    ...(apt.status === 'confirmed' ? styles.statusConfirmed : {}),
-                    ...(apt.status === 'completed' ? styles.statusCompleted : {}),
-                    ...(apt.status === 'cancelled' ? styles.statusCancelled : {})
-                  }}>
+                  <span className={`dashboard-status-badge ${
+                    apt.status === 'confirmed' ? 'dashboard-status-confirmed' :
+                    apt.status === 'completed' ? 'dashboard-status-completed' :
+                    apt.status === 'cancelled' ? 'dashboard-status-cancelled' : ''
+                  }`}>
                     {apt.status === 'confirmed' && '✅ Confirmé'}
                     {apt.status === 'completed' && '✔️ Terminé'}
                     {apt.status === 'cancelled' && '❌ Annulé'}
                   </span>
                 </div>
-                <div style={styles.appointmentInfo}>
+                <div className="dashboard-appointment-info">
                   <div>🛠️ {apt.services?.name}</div>
                   <div>📅 {new Date(apt.appointment_date).toLocaleDateString('fr-FR')}</div>
                   <div>🕐 {apt.appointment_time}</div>
@@ -880,21 +856,21 @@ const Dashboard = () => {
                   <div>💰 {apt.services?.price}€</div>
                 </div>
                 {apt.notes && (
-                  <div style={styles.appointmentNotes}>
+                  <div className="dashboard-appointment-notes">
                     📝 Notes: {apt.notes}
                   </div>
                 )}
                 {apt.status === 'confirmed' && (
-                  <div style={styles.appointmentActions}>
+                  <div className="dashboard-appointment-actions">
                     <button
                       onClick={() => updateAppointmentStatus(apt.id, 'completed')}
-                      style={styles.btnComplete}
+                      className="dashboard-btn-complete"
                     >
                       ✅ Marquer terminé
                     </button>
                     <button
                       onClick={() => updateAppointmentStatus(apt.id, 'cancelled')}
-                      style={styles.btnCancel}
+                      className="dashboard-btn-cancel"
                     >
                       ❌ Annuler
                     </button>
@@ -907,47 +883,47 @@ const Dashboard = () => {
 
         {/* INFOS SALON */}
         {activeTab === 'salon' && (
-          <div style={styles.section}>
-            <h3 style={styles.sectionTitle}>Informations du Salon</h3>
-            <div style={styles.form}>
-              <div style={styles.formGroup}>
-                <label style={styles.label}>Nom du salon</label>
+          <div className="dashboard-section">
+            <h3 className="dashboard-section-title">Informations du Salon</h3>
+            <div className="dashboard-form">
+              <div className="dashboard-form-group">
+                <label className="dashboard-label">Nom du salon</label>
                 <input
                   type="text"
                   value={salonInfo.salon_name}
                   onChange={(e) => setSalonInfo({...salonInfo, salon_name: e.target.value})}
-                  style={styles.input}
+                  className="dashboard-input"
                 />
               </div>
-              <div style={styles.formGroup}>
-                <label style={styles.label}>Téléphone</label>
+              <div className="dashboard-form-group">
+                <label className="dashboard-label">Téléphone</label>
                 <input
                   type="tel"
                   value={salonInfo.phone}
                   onChange={(e) => setSalonInfo({...salonInfo, phone: e.target.value})}
-                  style={styles.input}
+                  className="dashboard-input"
                 />
               </div>
-              <div style={styles.formGroup}>
-                <label style={styles.label}>Ville</label>
+              <div className="dashboard-form-group">
+                <label className="dashboard-label">Ville</label>
                 <input
                   type="text"
                   value={salonInfo.city}
                   onChange={(e) => setSalonInfo({...salonInfo, city: e.target.value})}
-                  style={styles.input}
+                  className="dashboard-input"
                 />
               </div>
-              <div style={styles.formGroup}>
-                <label style={styles.label}>Adresse complète</label>
+              <div className="dashboard-form-group">
+                <label className="dashboard-label">Adresse complète</label>
                 <input
                   type="text"
                   placeholder="Ex: 15 rue de la République"
                   value={salonInfo.address}
                   onChange={(e) => setSalonInfo({...salonInfo, address: e.target.value})}
-                  style={styles.input}
+                  className="dashboard-input"
                 />
               </div>
-              <button onClick={updateSalonInfo} style={styles.btnPrimary}>
+              <button onClick={updateSalonInfo} className="dashboard-btn-primary">
                 💾 Enregistrer
               </button>
             </div>
@@ -956,15 +932,15 @@ const Dashboard = () => {
 
         {/* SERVICES */}
         {activeTab === 'services' && (
-          <div style={styles.section}>
-            <h3 style={styles.sectionTitle}>Ajouter un Service</h3>
-            <div style={styles.form}>
-              <div style={styles.formGroup}>
-                <label style={styles.label}>Nom du service *</label>
+          <div className="dashboard-section">
+            <h3 className="dashboard-section-title">Ajouter un Service</h3>
+            <div className="dashboard-form">
+              <div className="dashboard-form-group">
+                <label className="dashboard-label">Nom du service *</label>
                 <select
                   value={newService.name}
                   onChange={(e) => setNewService({...newService, name: e.target.value})}
-                  style={styles.input}
+                  className="dashboard-input"
                 >
                   <option value="">-- Sélectionnez un service --</option>
                   <optgroup label="🧔 Services Hommes">
@@ -999,16 +975,16 @@ const Dashboard = () => {
                   type="text"
                   placeholder="Ou entrez un nom de service personnalisé"
                   onChange={(e) => e.target.value && setNewService({...newService, name: e.target.value})}
-                  style={{...styles.input, marginTop: '10px'}}
+                  className="dashboard-input" style={{marginTop: '10px'}}
                 />
               </div>
 
-              <div style={styles.formGroup}>
-                <label style={styles.label}>Durée (minutes) *</label>
+              <div className="dashboard-form-group">
+                <label className="dashboard-label">Durée (minutes) *</label>
                 <select
                   value={newService.duration}
                   onChange={(e) => setNewService({...newService, duration: parseInt(e.target.value)})}
-                  style={styles.input}
+                  className="dashboard-input"
                 >
                   <option value={15}>15 minutes</option>
                   <option value={30}>30 minutes</option>
@@ -1023,18 +999,18 @@ const Dashboard = () => {
                   type="number"
                   placeholder="Ou entrez une durée personnalisée"
                   onChange={(e) => e.target.value && setNewService({...newService, duration: parseInt(e.target.value)})}
-                  style={{...styles.input, marginTop: '10px'}}
+                  className="dashboard-input" style={{marginTop: '10px'}}
                   min="5"
                   max="480"
                 />
               </div>
 
-              <div style={styles.formGroup}>
-                <label style={styles.label}>Prix (€) *</label>
+              <div className="dashboard-form-group">
+                <label className="dashboard-label">Prix (€) *</label>
                 <select
                   value={newService.price || ''}
                   onChange={(e) => setNewService({...newService, price: parseFloat(e.target.value)})}
-                  style={styles.input}
+                  className="dashboard-input"
                 >
                   <option value="">-- Sélectionnez un prix --</option>
                   <option value={15}>15€</option>
@@ -1058,29 +1034,29 @@ const Dashboard = () => {
                   type="number"
                   placeholder="Ou entrez un prix personnalisé"
                   onChange={(e) => e.target.value && setNewService({...newService, price: parseFloat(e.target.value)})}
-                  style={{...styles.input, marginTop: '10px'}}
+                  className="dashboard-input" style={{marginTop: '10px'}}
                   min="0"
                   step="0.5"
                 />
               </div>
 
-              <button onClick={addService} style={styles.btnPrimary}>
+              <button onClick={addService} className="dashboard-btn-primary">
                 ➕ Ajouter le service
               </button>
             </div>
 
-            <h3 style={{...styles.sectionTitle, marginTop: '40px'}}>Services Existants</h3>
+            <h3 className="dashboard-section-title" style={{marginTop: '40px'}}>Services Existants</h3>
             {services.map(service => (
-              <div key={service.id} style={styles.serviceCard}>
+              <div key={service.id} className="dashboard-service-card">
                 <div>
-                  <strong style={styles.serviceName}>{service.name}</strong>
-                  <div style={styles.serviceDetails}>
+                  <strong className="dashboard-service-name">{service.name}</strong>
+                  <div className="dashboard-service-details">
                     ⏱️ {service.duration} min • 💰 {service.price}€
                   </div>
                 </div>
                 <button
                   onClick={() => deleteService(service.id)}
-                  style={styles.btnDelete}
+                  className="dashboard-btn-delete"
                 >
                   🗑️ Supprimer
                 </button>
@@ -1091,13 +1067,13 @@ const Dashboard = () => {
 
         {/* HORAIRES */}
         {activeTab === 'hours' && (
-          <div style={styles.section}>
-            <h3 style={styles.sectionTitle}>🏪 Horaires du Salon</h3>
-            <p style={styles.hoursDescription}>
+          <div className="dashboard-section">
+            <h3 className="dashboard-section-title">🏪 Horaires du Salon</h3>
+            <p className="dashboard-hours-description">
               Définissez les horaires d'ouverture globaux de votre salon. Les créneaux de réservation seront générés automatiquement en fonction de ces horaires.
             </p>
 
-            <div style={styles.form}>
+            <div className="dashboard-form">
               {[
                 { day: 1, label: 'Lundi' },
                 { day: 2, label: 'Mardi' },
@@ -1107,54 +1083,51 @@ const Dashboard = () => {
                 { day: 6, label: 'Samedi' },
                 { day: 0, label: 'Dimanche' }
               ].map(({ day, label }) => (
-                <div key={day} style={styles.dayRow}>
-                  <div style={styles.dayCheckbox}>
+                <div key={day} className="dashboard-day-row">
+                  <div className="dashboard-day-checkbox">
                     <input
                       type="checkbox"
                       checked={availability[day]?.enabled || false}
                       onChange={(e) => handleAvailabilityChange(day, 'enabled', e.target.checked)}
-                      style={styles.checkbox}
+                      className="dashboard-checkbox"
                     />
-                    <div style={{
-                      ...styles.dayName,
-                      ...(availability[day]?.enabled ? {} : styles.dayNameClosed)
-                    }}>
+                    <div className={`dashboard-day-name ${!availability[day]?.enabled ? 'dashboard-day-name-closed' : ''}`}>
                       {label}
                     </div>
                   </div>
 
                   {availability[day]?.enabled && (
-                    <div style={styles.dayInputs}>
+                    <div className="dashboard-day-inputs">
                       <input
                         type="time"
                         value={availability[day]?.start || '09:00'}
                         onChange={(e) => handleAvailabilityChange(day, 'start', e.target.value)}
-                        style={styles.timeInput}
+                        className="dashboard-time-input"
                       />
-                      <span style={styles.timeSeparator}>-</span>
+                      <span className="dashboard-time-separator">-</span>
                       <input
                         type="time"
                         value={availability[day]?.end || '18:00'}
                         onChange={(e) => handleAvailabilityChange(day, 'end', e.target.value)}
-                        style={styles.timeInput}
+                        className="dashboard-time-input"
                       />
                     </div>
                   )}
 
                   {!availability[day]?.enabled && (
-                    <div style={styles.dayClosedLabel}>En repos</div>
+                    <div className="dashboard-day-closed-label">En repos</div>
                   )}
                 </div>
               ))}
 
-              <div style={styles.hoursFooter}>
+              <div className="dashboard-hours-footer">
                 <button
                   onClick={saveAvailability}
-                  style={styles.btnPrimary}
+                  className="dashboard-btn-primary"
                 >
                   💾 Enregistrer les horaires du salon
                 </button>
-                <p style={styles.hoursNote}>
+                <p className="dashboard-hours-note">
                   ℹ️ Les modifications sont enregistrées automatiquement
                 </p>
               </div>
@@ -1167,31 +1140,31 @@ const Dashboard = () => {
 
         {/* ÉQUIPE */}
         {activeTab === 'team' && (
-          <div style={styles.section}>
-            <h3 style={styles.sectionTitle}>Mon Équipe</h3>
-            <p style={styles.teamDescription}>
+          <div className="dashboard-section">
+            <h3 className="dashboard-section-title">Mon Équipe</h3>
+            <p className="dashboard-team-description">
               Gérez les membres de votre équipe. Ils pourront accéder à votre planning et gérer les rendez-vous.
             </p>
 
             {/* Formulaire d'ajout d'employé */}
-            <div style={styles.form}>
-              <div style={styles.formGroup}>
-                <label style={styles.label}>Nom complet *</label>
+            <div className="dashboard-form">
+              <div className="dashboard-form-group">
+                <label className="dashboard-label">Nom complet *</label>
                 <input
                   type="text"
                   placeholder="Ex: Marie Dupont"
                   value={newEmployee.name}
                   onChange={(e) => setNewEmployee({...newEmployee, name: e.target.value})}
-                  style={styles.input}
+                  className="dashboard-input"
                 />
               </div>
 
-              <div style={styles.formGroup}>
-                <label style={styles.label}>Spécialité</label>
+              <div className="dashboard-form-group">
+                <label className="dashboard-label">Spécialité</label>
                 <select
                   value={newEmployee.specialty}
                   onChange={(e) => setNewEmployee({...newEmployee, specialty: e.target.value})}
-                  style={styles.select}
+                  className="dashboard-select"
                 >
                   <option value="">-- Sélectionnez une spécialité --</option>
 
@@ -1225,53 +1198,41 @@ const Dashboard = () => {
                     placeholder="Entrez votre spécialité..."
                     value={newEmployee.customSpecialty || ''}
                     onChange={(e) => setNewEmployee({...newEmployee, customSpecialty: e.target.value})}
-                    style={{...styles.input, marginTop: '10px'}}
+                    className="dashboard-input" style={{marginTop: '10px'}}
                   />
                 )}
               </div>
 
-              <div style={styles.formGroup}>
-                <label style={styles.label}>Email (optionnel)</label>
+              <div className="dashboard-form-group">
+                <label className="dashboard-label">Email (optionnel)</label>
                 <input
                   type="email"
                   placeholder="Email (optionnel)"
                   value={newEmployee.email}
                   onChange={(e) => setNewEmployee({...newEmployee, email: e.target.value})}
-                  style={styles.input}
+                  className="dashboard-input"
                 />
               </div>
 
-              <div style={styles.formGroup}>
-                <label style={styles.label}>Téléphone (optionnel)</label>
+              <div className="dashboard-form-group">
+                <label className="dashboard-label">Téléphone (optionnel)</label>
                 <input
                   type="tel"
                   placeholder="Téléphone (optionnel)"
                   value={newEmployee.phone}
                   onChange={(e) => setNewEmployee({...newEmployee, phone: e.target.value})}
-                  style={styles.input}
+                  className="dashboard-input"
                 />
               </div>
 
-              <div style={styles.formGroup}>
-                <label style={styles.label}>Photo</label>
-                <div style={styles.photoUpload}>
+              <div className="dashboard-form-group">
+                <label className="dashboard-label">Photo</label>
+                <div className="dashboard-photo-upload">
                   {newEmployee.photoPreview && (
-                    <div style={{
-                      width: '100px',
-                      height: '100px',
-                      borderRadius: '50%',
-                      overflow: 'hidden',
-                      border: '3px solid #3b82f6',
-                      marginTop: '10px'
-                    }}>
+                    <div className="dashboard-photo-preview">
                       <img
                         src={newEmployee.photoPreview}
                         alt="Preview"
-                        style={{
-                          width: '100%',
-                          height: '100%',
-                          objectFit: 'cover'
-                        }}
                       />
                     </div>
                   )}
@@ -1279,65 +1240,65 @@ const Dashboard = () => {
                     type="file"
                     accept="image/*"
                     onChange={(e) => handlePhotoChange(e)}
-                    style={styles.fileInput}
+                    className="dashboard-file-input"
                     id="photo-upload"
                   />
-                  <label htmlFor="photo-upload" style={styles.fileLabel}>
+                  <label htmlFor="photo-upload" className="dashboard-file-label">
                     📷 Choisir une photo
                   </label>
                 </div>
               </div>
 
-              <button onClick={addEmployee} style={styles.btnPrimary}>
+              <button onClick={addEmployee} className="dashboard-btn-primary">
                 ➕ Ajouter l'employé
               </button>
             </div>
 
             {/* Liste des employés */}
-            <h3 style={{...styles.sectionTitle, marginTop: '40px'}}>Employés ({employees.length})</h3>
+            <h3 className="dashboard-section-title" style={{marginTop: '40px'}}>Employés ({employees.length})</h3>
             {employees.length === 0 ? (
-              <div style={styles.emptyState}>
-                <div style={styles.emptyIcon}>👥</div>
-                <p style={styles.emptyText}>Aucun employé pour le moment</p>
-                <p style={styles.emptySubtext}>Ajoutez votre premier employé pour commencer</p>
+              <div className="dashboard-empty-state">
+                <div className="dashboard-empty-icon">👥</div>
+                <p className="dashboard-empty-text">Aucun employé pour le moment</p>
+                <p className="dashboard-empty-subtext">Ajoutez votre premier employé pour commencer</p>
               </div>
             ) : (
               employees.map(employee => (
-                <div key={employee.id} style={styles.employeeCard}>
-                  <div style={styles.employeeInfo}>
-                    <div style={styles.employeeHeader}>
-                      <div style={styles.employeePhotoContainer}>
+                <div key={employee.id} className="dashboard-employee-card">
+                  <div className="dashboard-employee-info">
+                    <div className="dashboard-employee-header">
+                      <div className="dashboard-employee-photo-container">
                         <img
                           src={employee.photo_url || '/default-avatar.png'}
                           alt={employee.name}
-                          style={styles.employeePhoto}
+                          className="dashboard-employee-photo"
                           onError={(e) => {
                             e.target.src = '/default-avatar.png'
                           }}
                         />
                       </div>
                       <div>
-                        <strong style={styles.employeeName}>{employee.name}</strong>
+                        <strong className="dashboard-employee-name">{employee.name}</strong>
                         {employee.specialty && (
-                          <div><span style={styles.employeeSpecialty}>{employee.specialty}</span></div>
+                          <div><span className="dashboard-employee-specialty">{employee.specialty}</span></div>
                         )}
                       </div>
                     </div>
-                    <div style={styles.employeeDetails}>
+                    <div className="dashboard-employee-details">
                       {employee.email && `📧 ${employee.email}`}
                       {employee.phone && ` • ☎️ ${employee.phone}`}
                     </div>
                   </div>
-                  <div style={styles.employeeActions}>
+                  <div className="dashboard-employee-actions">
                     <button
                       onClick={() => editEmployee(employee)}
-                      style={styles.btnEdit}
+                      className="dashboard-btn-edit"
                     >
                       ✏️ Modifier
                     </button>
                     <button
                       onClick={() => deleteEmployee(employee.id)}
-                      style={styles.btnDelete}
+                      className="dashboard-btn-delete"
                     >
                       🗑️ Supprimer
                     </button>
@@ -1350,17 +1311,17 @@ const Dashboard = () => {
 
         {/* PLANNING */}
         {activeTab === 'planning' && (
-          <div style={styles.section}>
-            <h3 style={styles.sectionTitle}>📋 Planning des Employés</h3>
+          <div className="dashboard-section">
+            <h3 className="dashboard-section-title">📋 Planning des Employés</h3>
 
             {/* Sélecteur d'employé */}
-            <div style={styles.form}>
-              <div style={styles.formGroup}>
-                <label style={styles.label}>Choisir un employé :</label>
+            <div className="dashboard-form">
+              <div className="dashboard-form-group">
+                <label className="dashboard-label">Choisir un employé :</label>
                 <select
                   value={selectedEmployee || ''}
                   onChange={(e) => setSelectedEmployee(e.target.value)}
-                  style={styles.select}
+                  className="dashboard-select"
                 >
                   <option value="">-- Sélectionnez --</option>
                   {employees.map(emp => (
@@ -1374,9 +1335,9 @@ const Dashboard = () => {
 
             {/* Configuration horaires employé */}
             {selectedEmployee && (
-              <div style={styles.form}>
-                <h3 style={styles.sectionTitle}>Horaires de {employees.find(e => e.id === selectedEmployee)?.name}</h3>
-                <p style={styles.teamDescription}>
+              <div className="dashboard-form">
+                <h3 className="dashboard-section-title">Horaires de {employees.find(e => e.id === selectedEmployee)?.name}</h3>
+                <p className="dashboard-team-description">
                   Définissez les horaires de travail de cet employé. Les créneaux de réservation seront générés automatiquement.
                 </p>
 
@@ -1389,54 +1350,51 @@ const Dashboard = () => {
                   { day: 'saturday', label: 'Samedi' },
                   { day: 'sunday', label: 'Dimanche' }
                 ].map(({ day, label }) => (
-                  <div key={day} style={styles.dayRow}>
-                    <div style={styles.dayCheckbox}>
+                  <div key={day} className="dashboard-day-row">
+                    <div className="dashboard-day-checkbox">
                       <input
                         type="checkbox"
                         checked={employeeSchedules[selectedEmployee]?.[day]?.enabled || false}
                         onChange={(e) => handleScheduleChange(selectedEmployee, day, 'enabled', e.target.checked)}
-                        style={styles.checkbox}
+                        className="dashboard-checkbox"
                       />
-                      <div style={{
-                        ...styles.dayName,
-                        ...(employeeSchedules[selectedEmployee]?.[day]?.enabled ? {} : styles.dayNameClosed)
-                      }}>
+                      <div className={`dashboard-day-name ${!employeeSchedules[selectedEmployee]?.[day]?.enabled ? 'dashboard-day-name-closed' : ''}`}>
                         {label}
                       </div>
                     </div>
 
                     {employeeSchedules[selectedEmployee]?.[day]?.enabled && (
-                      <div style={styles.dayInputs}>
+                      <div className="dashboard-day-inputs">
                         <input
                           type="time"
                           value={employeeSchedules[selectedEmployee]?.[day]?.start || '09:00'}
                           onChange={(e) => handleScheduleChange(selectedEmployee, day, 'start', e.target.value)}
-                          style={styles.timeInput}
+                          className="dashboard-time-input"
                         />
-                        <span style={styles.timeSeparator}>-</span>
+                        <span className="dashboard-time-separator">-</span>
                         <input
                           type="time"
                           value={employeeSchedules[selectedEmployee]?.[day]?.end || '18:00'}
                           onChange={(e) => handleScheduleChange(selectedEmployee, day, 'end', e.target.value)}
-                          style={styles.timeInput}
+                          className="dashboard-time-input"
                         />
                       </div>
                     )}
 
                     {!employeeSchedules[selectedEmployee]?.[day]?.enabled && (
-                      <div style={styles.dayClosedLabel}>En repos</div>
+                      <div className="dashboard-day-closed-label">En repos</div>
                     )}
                   </div>
                 ))}
 
-                <div style={styles.hoursFooter}>
+                <div className="dashboard-hours-footer">
                   <button
                     onClick={() => saveEmployeeSchedule(selectedEmployee)}
-                    style={styles.btnPrimary}
+                    className="dashboard-btn-primary"
                   >
                     💾 Enregistrer les horaires
                   </button>
-                  <p style={styles.hoursNote}>
+                  <p className="dashboard-hours-note">
                     ℹ️ Les modifications sont enregistrées automatiquement
                   </p>
                 </div>
@@ -1444,18 +1402,18 @@ const Dashboard = () => {
             )}
 
             {!selectedEmployee && employees.length > 0 && (
-              <div style={styles.emptyState}>
-                <div style={styles.emptyIcon}>👥</div>
-                <p style={styles.emptyText}>Sélectionnez un employé</p>
-                <p style={styles.emptySubtext}>Choisissez un employé dans la liste ci-dessus pour configurer ses horaires</p>
+              <div className="dashboard-empty-state">
+                <div className="dashboard-empty-icon">👥</div>
+                <p className="dashboard-empty-text">Sélectionnez un employé</p>
+                <p className="dashboard-empty-subtext">Choisissez un employé dans la liste ci-dessus pour configurer ses horaires</p>
               </div>
             )}
 
             {employees.length === 0 && (
-              <div style={styles.emptyState}>
-                <div style={styles.emptyIcon}>👥</div>
-                <p style={styles.emptyText}>Aucun employé pour le moment</p>
-                <p style={styles.emptySubtext}>Ajoutez des employés dans l'onglet Équipe</p>
+              <div className="dashboard-empty-state">
+                <div className="dashboard-empty-icon">👥</div>
+                <p className="dashboard-empty-text">Aucun employé pour le moment</p>
+                <p className="dashboard-empty-subtext">Ajoutez des employés dans l'onglet Équipe</p>
               </div>
             )}
           </div>
@@ -1464,534 +1422,6 @@ const Dashboard = () => {
       </div>
     </div>
   )
-}
-
-const styles = {
-  container: {
-    minHeight: '100vh',
-    background: 'linear-gradient(135deg, #1a1a1a 0%, #2d3748 50%, #1a202c 100%)',
-    color: '#fff'
-  },
-  header: {
-    background: 'linear-gradient(135deg, #374151 0%, #1f2937 100%)',
-    padding: '20px',
-    borderBottom: '2px solid #4b5563'
-  },
-  headerContent: {
-    maxWidth: '1200px',
-    margin: '0 auto',
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    flexWrap: 'wrap',
-    gap: '15px'
-  },
-  logo: {
-    fontSize: 'clamp(20px, 4vw, 28px)',
-    fontWeight: '800',
-    margin: 0
-  },
-  logoBooking: {
-    color: '#3b82f6'
-  },
-  logoSaas: {
-    color: '#10b981'
-  },
-  logoDashboard: {
-    color: '#9ca3af',
-    fontSize: 'clamp(16px, 3vw, 20px)'
-  },
-  headerRight: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '15px',
-    flexWrap: 'wrap'
-  },
-  userEmail: {
-    color: '#9ca3af',
-    fontSize: 'clamp(12px, 2.5vw, 14px)'
-  },
-  logoutBtn: {
-    padding: '10px 20px',
-    background: '#ef4444',
-    color: '#fff',
-    border: 'none',
-    borderRadius: '8px',
-    cursor: 'pointer',
-    fontWeight: '600',
-    fontSize: 'clamp(12px, 2.5vw, 14px)'
-  },
-  trialBanner: {
-    background: 'linear-gradient(135deg, #3b82f6 0%, #10b981 100%)',
-    padding: 'clamp(15px, 3vw, 20px)',
-    textAlign: 'center',
-    fontSize: 'clamp(14px, 2.5vw, 16px)'
-  },
-  trialText: {
-    margin: '5px 0 0 0',
-    opacity: 0.9,
-    fontSize: 'clamp(12px, 2vw, 14px)'
-  },
-  welcome: {
-    padding: 'clamp(20px, 4vw, 40px) 20px',
-    maxWidth: '1200px',
-    margin: '0 auto'
-  },
-  welcomeTitle: {
-    fontSize: 'clamp(24px, 5vw, 36px)',
-    fontWeight: '700',
-    marginBottom: '10px'
-  },
-  welcomeText: {
-    color: '#9ca3af',
-    fontSize: 'clamp(14px, 2.5vw, 16px)'
-  },
-  tabs: {
-    display: 'flex',
-    gap: '5px',
-    padding: '0 20px',
-    maxWidth: '1200px',
-    margin: '0 auto 30px',
-    overflowX: 'auto',
-    flexWrap: 'nowrap',
-    justifyContent: 'center'
-  },
-  tab: {
-    padding: 'clamp(10px, 2vw, 12px) clamp(15px, 3vw, 20px)',
-    background: 'transparent',
-    color: '#9ca3af',
-    border: 'none',
-    borderRadius: '10px',
-    cursor: 'pointer',
-    fontWeight: '600',
-    fontSize: 'clamp(13px, 2.5vw, 15px)',
-    transition: 'all 0.3s',
-    whiteSpace: 'nowrap'
-  },
-  tabActive: {
-    background: 'linear-gradient(135deg, #3b82f6 0%, #10b981 100%)',
-    color: '#fff',
-    transform: 'scale(1.05)'
-  },
-  content: {
-    maxWidth: '1200px',
-    margin: '0 auto',
-    padding: '20px'
-  },
-  statsGrid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-    gap: '20px',
-    marginBottom: '40px'
-  },
-  statCard: {
-    background: '#374151',
-    padding: 'clamp(20px, 4vw, 30px)',
-    borderRadius: '15px',
-    textAlign: 'center'
-  },
-  statIcon: {
-    fontSize: 'clamp(36px, 6vw, 48px)',
-    marginBottom: '10px'
-  },
-  statLabel: {
-    color: '#9ca3af',
-    fontSize: 'clamp(13px, 2.5vw, 15px)',
-    marginBottom: '10px'
-  },
-  statValue: {
-    fontSize: 'clamp(28px, 5vw, 36px)',
-    fontWeight: '700',
-    background: 'linear-gradient(135deg, #3b82f6 0%, #10b981 100%)',
-    WebkitBackgroundClip: 'text',
-    WebkitTextFillColor: 'transparent'
-  },
-  section: {
-    background: '#374151',
-    padding: 'clamp(20px, 4vw, 30px)',
-    borderRadius: '15px',
-    marginBottom: '20px'
-  },
-  sectionTitle: {
-    fontSize: 'clamp(20px, 4vw, 24px)',
-    fontWeight: '700',
-    marginBottom: '20px',
-    color: '#fff'
-  },
-  appointmentItem: {
-    background: '#1f2937',
-    padding: '15px',
-    borderRadius: '10px',
-    marginBottom: '10px',
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    flexWrap: 'wrap',
-    gap: '10px'
-  },
-  appointmentDate: {
-    color: '#9ca3af',
-    fontSize: 'clamp(12px, 2vw, 14px)'
-  },
-  appointmentPrice: {
-    fontSize: 'clamp(18px, 3vw, 20px)',
-    fontWeight: '700',
-    color: '#10b981'
-  },
-  appointmentCard: {
-    background: '#1f2937',
-    padding: 'clamp(15px, 3vw, 20px)',
-    borderRadius: '15px',
-    marginBottom: '15px'
-  },
-  appointmentHeader: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: '15px',
-    flexWrap: 'wrap',
-    gap: '10px'
-  },
-  clientName: {
-    fontSize: 'clamp(16px, 3vw, 18px)',
-    marginBottom: '5px'
-  },
-  appointmentDetails: {
-    color: '#9ca3af',
-    fontSize: 'clamp(12px, 2vw, 14px)'
-  },
-  statusBadge: {
-    padding: '5px 15px',
-    borderRadius: '20px',
-    fontSize: 'clamp(11px, 2vw, 13px)',
-    fontWeight: '600'
-  },
-  statusConfirmed: {
-    background: '#10b981',
-    color: '#fff'
-  },
-  statusCompleted: {
-    background: '#6b7280',
-    color: '#fff'
-  },
-  statusCancelled: {
-    background: '#ef4444',
-    color: '#fff'
-  },
-  appointmentInfo: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))',
-    gap: '10px',
-    marginBottom: '15px',
-    fontSize: 'clamp(13px, 2.5vw, 14px)',
-    color: '#9ca3af'
-  },
-  appointmentNotes: {
-    background: '#374151',
-    padding: '10px',
-    borderRadius: '8px',
-    marginBottom: '15px',
-    fontSize: 'clamp(12px, 2vw, 14px)',
-    fontStyle: 'italic'
-  },
-  appointmentActions: {
-    display: 'flex',
-    gap: '10px',
-    flexWrap: 'wrap'
-  },
-  btnComplete: {
-    padding: '10px 20px',
-    background: '#10b981',
-    color: '#fff',
-    border: 'none',
-    borderRadius: '8px',
-    cursor: 'pointer',
-    fontWeight: '600',
-    fontSize: 'clamp(12px, 2.5vw, 14px)'
-  },
-  btnCancel: {
-    padding: '10px 20px',
-    background: '#ef4444',
-    color: '#fff',
-    border: 'none',
-    borderRadius: '8px',
-    cursor: 'pointer',
-    fontWeight: '600',
-    fontSize: 'clamp(12px, 2.5vw, 14px)'
-  },
-  form: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '20px'
-  },
-  formGroup: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '10px'
-  },
-  formRow: {
-    display: 'flex',
-    gap: '10px',
-    flexWrap: 'wrap'
-  },
-  label: {
-    color: '#9ca3af',
-    fontSize: 'clamp(13px, 2.5vw, 15px)',
-    fontWeight: '600'
-  },
-  input: {
-    padding: 'clamp(10px, 2vw, 12px)',
-    background: '#1f2937',
-    border: '2px solid #4b5563',
-    borderRadius: '8px',
-    color: '#fff',
-    fontSize: 'clamp(14px, 2.5vw, 16px)',
-    outline: 'none'
-  },
-  select: {
-    padding: 'clamp(10px, 2vw, 12px)',
-    background: '#1f2937',
-    border: '2px solid #4b5563',
-    borderRadius: '8px',
-    color: '#fff',
-    fontSize: 'clamp(14px, 2.5vw, 16px)',
-    outline: 'none',
-    cursor: 'pointer'
-  },
-  btnPrimary: {
-    padding: 'clamp(10px, 2vw, 12px) clamp(20px, 4vw, 25px)',
-    background: 'linear-gradient(135deg, #3b82f6 0%, #10b981 100%)',
-    color: '#fff',
-    border: 'none',
-    borderRadius: '8px',
-    cursor: 'pointer',
-    fontWeight: '700',
-    fontSize: 'clamp(14px, 2.5vw, 16px)',
-    whiteSpace: 'nowrap'
-  },
-  serviceCard: {
-    background: '#1f2937',
-    padding: '15px',
-    borderRadius: '10px',
-    marginBottom: '10px',
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    flexWrap: 'wrap',
-    gap: '10px'
-  },
-  serviceName: {
-    fontSize: 'clamp(15px, 3vw, 17px)',
-    marginBottom: '5px'
-  },
-  serviceDetails: {
-    color: '#9ca3af',
-    fontSize: 'clamp(12px, 2vw, 14px)'
-  },
-  btnDelete: {
-    padding: '8px 15px',
-    background: '#ef4444',
-    color: '#fff',
-    border: 'none',
-    borderRadius: '8px',
-    cursor: 'pointer',
-    fontSize: 'clamp(12px, 2vw, 13px)'
-  },
-  dayRow: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: '15px',
-    background: '#1f2937',
-    borderRadius: '10px',
-    marginBottom: '10px',
-    flexWrap: 'wrap',
-    gap: '10px'
-  },
-  dayName: {
-    fontSize: 'clamp(14px, 2.5vw, 16px)',
-    fontWeight: '600',
-    minWidth: '100px'
-  },
-  dayInputs: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '10px'
-  },
-  timeInput: {
-    padding: '8px 12px',
-    background: '#374151',
-    border: '2px solid #4b5563',
-    borderRadius: '8px',
-    color: '#fff',
-    fontSize: 'clamp(13px, 2.5vw, 15px)'
-  },
-  timeSeparator: {
-    color: '#9ca3af'
-  },
-  loading: {
-    minHeight: '100vh',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    background: 'linear-gradient(135deg, #1a1a1a 0%, #2d3748 50%, #1a202c 100%)',
-    color: '#fff',
-    fontSize: 'clamp(18px, 3vw, 24px)'
-  },
-  hoursDescription: {
-    color: '#9ca3af',
-    fontSize: 'clamp(13px, 2.5vw, 15px)',
-    marginBottom: '25px',
-    lineHeight: '1.6'
-  },
-  dayCheckbox: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '15px',
-    minWidth: '150px'
-  },
-  checkbox: {
-    width: '20px',
-    height: '20px',
-    cursor: 'pointer',
-    accentColor: '#10b981'
-  },
-  dayNameClosed: {
-    color: '#6b7280',
-    textDecoration: 'line-through'
-  },
-  dayClosedLabel: {
-    color: '#ef4444',
-    fontSize: 'clamp(13px, 2.5vw, 15px)',
-    fontWeight: '600',
-    fontStyle: 'italic'
-  },
-  hoursFooter: {
-    marginTop: '30px',
-    textAlign: 'center',
-    padding: '20px',
-    background: '#1f2937',
-    borderRadius: '10px'
-  },
-  hoursNote: {
-    color: '#9ca3af',
-    fontSize: 'clamp(12px, 2vw, 14px)',
-    marginTop: '10px',
-    fontStyle: 'italic'
-  },
-  teamDescription: {
-    color: '#9ca3af',
-    fontSize: 'clamp(13px, 2.5vw, 15px)',
-    marginBottom: '25px',
-    lineHeight: '1.6'
-  },
-  employeeCard: {
-    background: '#1f2937',
-    padding: 'clamp(15px, 3vw, 20px)',
-    borderRadius: '15px',
-    marginBottom: '15px',
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    flexWrap: 'wrap',
-    gap: '15px'
-  },
-  employeeInfo: {
-    flex: 1,
-    minWidth: '200px'
-  },
-  employeeHeader: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '15px',
-    marginBottom: '8px',
-    flexWrap: 'wrap'
-  },
-  employeePhotoContainer: {
-    width: '80px',
-    height: '80px',
-    borderRadius: '50%',
-    overflow: 'hidden',
-    border: '2px solid #3b82f6',
-    flexShrink: 0
-  },
-  employeePhoto: {
-    width: '100%',
-    height: '100%',
-    objectFit: 'cover'
-  },
-  employeeName: {
-    fontSize: 'clamp(16px, 3vw, 18px)',
-    color: '#fff'
-  },
-  employeeSpecialty: {
-    background: 'linear-gradient(135deg, #3b82f6 0%, #10b981 100%)',
-    padding: '4px 12px',
-    borderRadius: '15px',
-    fontSize: 'clamp(11px, 2vw, 13px)',
-    fontWeight: '600',
-    color: '#fff'
-  },
-  employeeDetails: {
-    color: '#9ca3af',
-    fontSize: 'clamp(13px, 2.5vw, 14px)'
-  },
-  employeeActions: {
-    display: 'flex',
-    gap: '10px',
-    flexWrap: 'wrap'
-  },
-  btnEdit: {
-    padding: '8px 15px',
-    background: '#3b82f6',
-    color: '#fff',
-    border: 'none',
-    borderRadius: '8px',
-    cursor: 'pointer',
-    fontSize: 'clamp(12px, 2vw, 13px)',
-    fontWeight: '600'
-  },
-  emptyState: {
-    textAlign: 'center',
-    padding: '60px 20px',
-    background: '#1f2937',
-    borderRadius: '15px',
-    marginTop: '20px'
-  },
-  emptyIcon: {
-    fontSize: 'clamp(48px, 8vw, 64px)',
-    marginBottom: '20px',
-    opacity: 0.5
-  },
-  emptyText: {
-    fontSize: 'clamp(18px, 3vw, 20px)',
-    fontWeight: '600',
-    color: '#9ca3af',
-    marginBottom: '10px'
-  },
-  emptySubtext: {
-    fontSize: 'clamp(14px, 2.5vw, 16px)',
-    color: '#6b7280'
-  },
-  photoUpload: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    gap: '10px'
-  },
-  fileInput: {
-    display: 'none'
-  },
-  fileLabel: {
-    padding: '10px 20px',
-    background: '#3b82f6',
-    color: '#fff',
-    border: 'none',
-    borderRadius: '8px',
-    cursor: 'pointer',
-    fontWeight: '600',
-    fontSize: 'clamp(12px, 2.5vw, 14px)'
-  }
 }
 
 export default Dashboard
