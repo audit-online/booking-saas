@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import emailjs from '@emailjs/browser'
+import './BookingPage.css'
 
 const BookingPage = () => {
   const { slug } = useParams()
@@ -287,61 +288,58 @@ const BookingPage = () => {
 
   if (loading) {
     return (
-      <div style={styles.container}>
-        <div style={styles.loader}>Chargement...</div>
+      <div className="booking-container">
+        <div className="booking-loader">Chargement...</div>
       </div>
     )
   }
 
   if (!salon) {
     return (
-      <div style={styles.container}>
-        <div style={styles.error}>Salon non trouvé</div>
+      <div className="booking-container">
+        <div className="booking-error">Salon non trouvé</div>
       </div>
     )
   }
 
   return (
-    <div style={styles.container}>
+    <div className="booking-container">
       {showInstallButton && (
-        <div style={styles.installBanner}>
+        <div className="booking-install-banner">
           <span>📱 Installer l'app pour réserver plus vite</span>
-          <div style={{ display: 'flex', gap: '10px' }}>
-            <button onClick={handleInstallPWA} style={styles.installBtn}>
+          <div>
+            <button onClick={handleInstallPWA} className="booking-install-btn">
               Installer
             </button>
-            <button onClick={() => setShowInstallButton(false)} style={styles.closeBtn}>
+            <button onClick={() => setShowInstallButton(false)} className="booking-close-btn">
               ✕
             </button>
           </div>
         </div>
       )}
 
-      <div style={styles.header}>
-        <div style={styles.headerGradient}></div>
-        <h1 style={styles.salonName}>{salon.salon_name}</h1>
-        <p style={styles.salonInfo}>📍 {salon.city} • ☎️ {salon.phone}</p>
+      <div className="booking-header">
+        <div className="booking-header-gradient"></div>
+        <h1 className="booking-salon-name">{salon.salon_name}</h1>
+        <p className="booking-salon-info">📍 {salon.city} • ☎️ {salon.phone}</p>
       </div>
 
-      <div style={styles.progressBar}>
+      <div className="booking-progress-bar">
         {[1, 2, 3, 4, 5].map(num => (
           <div
             key={num}
-            style={{
-              ...styles.progressStep,
-              ...(step >= num ? styles.progressStepActive : {})
-            }}
+            className={`booking-progress-step ${step >= num ? 'booking-progress-step-active' : ''}`}
           >
             {num}
           </div>
         ))}
       </div>
 
-      <div style={styles.content}>
+      <div className="booking-content">
         {step === 1 && (
-          <div style={styles.stepContainer}>
-            <h2 style={styles.stepTitle}>✨ Choisissez votre service</h2>
-            <div style={styles.servicesGrid}>
+          <div className="booking-step-container">
+            <h2 className="booking-step-title">✨ Choisissez votre service</h2>
+            <div className="booking-services-grid">
               {services.map(service => (
                 <div
                   key={service.id}
@@ -349,16 +347,13 @@ const BookingPage = () => {
                     setSelectedService(service)
                     setStep(2) // Go to employee selection
                   }}
-                  style={{
-                    ...styles.serviceCard,
-                    ...(selectedService?.id === service.id ? styles.serviceCardActive : {})
-                  }}
+                  className={`booking-service-card ${selectedService?.id === service.id ? 'booking-service-card-active' : ''}`}
                 >
-                  <div style={styles.serviceIcon}>💇</div>
-                  <h3 style={styles.serviceName}>{service.name}</h3>
-                  <div style={styles.serviceDetails}>
-                    <span style={styles.serviceDuration}>⏱ {service.duration} min</span>
-                    <span style={styles.servicePrice}>{service.price}€</span>
+                  <div className="booking-service-icon">💇</div>
+                  <h3 className="booking-service-name">{service.name}</h3>
+                  <div className="booking-service-details">
+                    <span className="booking-service-duration">⏱ {service.duration} min</span>
+                    <span className="booking-service-price">{service.price}€</span>
                   </div>
                 </div>
               ))}
@@ -367,14 +362,14 @@ const BookingPage = () => {
         )}
 
         {step === 2 && (
-          <div style={styles.stepContainer}>
-            <button onClick={() => setStep(1)} style={styles.backBtn}>← Retour</button>
-            <h2 style={styles.stepTitle}>👥 Choisissez votre employé</h2>
-            <div style={styles.employeesGrid}>
+          <div className="booking-step-container">
+            <button onClick={() => setStep(1)} className="booking-back-btn">← Retour</button>
+            <h2 className="booking-step-title">👥 Choisissez votre employé</h2>
+            <div className="booking-employees-grid">
               {employees.length === 0 ? (
-                <div style={styles.noEmployees}>
+                <div className="booking-no-employees">
                   <p>Aucun employé disponible pour ce service</p>
-                  <p style={styles.noEmployeesSubtext}>Vous pouvez continuer sans sélectionner d'employé</p>
+                  <p className="booking-no-employees-subtext">Vous pouvez continuer sans sélectionner d'employé</p>
                 </div>
               ) : (
                 employees.map(employee => (
@@ -384,17 +379,14 @@ const BookingPage = () => {
                       setSelectedEmployee(employee)
                       setStep(3)
                     }}
-                    style={{
-                      ...styles.employeeCard,
-                      ...(selectedEmployee?.id === employee.id ? styles.employeeCardActive : {})
-                    }}
+                    className={`booking-employee-card ${selectedEmployee?.id === employee.id ? 'booking-employee-card-active' : ''}`}
                   >
-                    <div style={styles.employeeAvatar}>
+                    <div className="booking-employee-avatar">
                       {employee.photo_url ? (
                         <img
                           src={employee.photo_url}
                           alt={employee.name}
-                          style={styles.employeePhoto}
+                          className="booking-employee-photo"
                           onError={(e) => {
                             e.target.style.display = 'none'
                             e.target.nextSibling.style.display = 'flex'
@@ -402,18 +394,16 @@ const BookingPage = () => {
                         />
                       ) : null}
                       <div
-                        style={{
-                          ...styles.employeeInitial,
-                          display: employee.photo_url ? 'none' : 'flex'
-                        }}
+                        className="booking-employee-initial"
+                        style={{display: employee.photo_url ? 'none' : 'flex'}}
                       >
                         {employee.name.charAt(0).toUpperCase()}
                       </div>
                     </div>
-                    <div style={styles.employeeInfo}>
-                      <h3 style={styles.employeeName}>{employee.name}</h3>
+                    <div className="booking-employee-info">
+                      <h3 className="booking-employee-name">{employee.name}</h3>
                       {employee.specialty && (
-                        <div style={styles.employeeSpecialty}>{employee.specialty}</div>
+                        <div className="booking-employee-specialty">{employee.specialty}</div>
                       )}
                     </div>
                   </div>
@@ -425,16 +415,12 @@ const BookingPage = () => {
                   setSelectedEmployee(null)
                   setStep(3)
                 }}
-                style={{
-                  ...styles.employeeCard,
-                  ...styles.noEmployeeOption,
-                  ...(selectedEmployee === null ? styles.employeeCardActive : {})
-                }}
+                className={`booking-employee-card booking-no-employee-option ${selectedEmployee === null ? 'booking-employee-card-active' : ''}`}
               >
-                <div style={styles.noEmployeeIcon}>❓</div>
-                <div style={styles.employeeInfo}>
-                  <h3 style={styles.employeeName}>Peu importe</h3>
-                  <div style={styles.employeeSpecialty}>Continuer sans préférence</div>
+                <div className="booking-no-employee-icon">❓</div>
+                <div className="booking-employee-info">
+                  <h3 className="booking-employee-name">Peu importe</h3>
+                  <div className="booking-employee-specialty">Continuer sans préférence</div>
                 </div>
               </div>
             </div>
@@ -442,26 +428,26 @@ const BookingPage = () => {
         )}
 
         {step === 3 && (
-          <div style={styles.stepContainer}>
-            <button onClick={() => setStep(2)} style={styles.backBtn}>← Retour</button>
-            <h2 style={styles.stepTitle}>📅 Choisissez la date et l'heure</h2>
+          <div className="booking-step-container">
+            <button onClick={() => setStep(2)} className="booking-back-btn">← Retour</button>
+            <h2 className="booking-step-title">📅 Choisissez la date et l'heure</h2>
             
-            <div style={styles.dateTimeSection}>
-              <label style={styles.label}>Date</label>
+            <div className="booking-datetime-section">
+              <label className="booking-label">Date</label>
               <input
                 type="date"
                 value={selectedDate}
                 onChange={(e) => setSelectedDate(e.target.value)}
                 min={new Date().toISOString().split('T')[0]}
-                style={styles.dateInput}
+                className="booking-date-input"
               />
 
               {selectedDate && (
                 <>
-                  <label style={styles.label}>Heure disponible</label>
-                  <div style={styles.timeSlotsGrid}>
+                  <label className="booking-label">Heure disponible</label>
+                  <div className="booking-time-slots-grid">
                     {availableSlots.length === 0 ? (
-                      <p style={styles.noSlots}>Aucun créneau disponible ce jour</p>
+                      <p className="booking-no-slots">Aucun créneau disponible ce jour</p>
                     ) : (
                       availableSlots.map(slot => {
                         const isBooked = bookedSlots?.includes(slot)
@@ -471,11 +457,7 @@ const BookingPage = () => {
                             key={slot}
                             onClick={() => !isBooked && setSelectedTime(slot)}
                             disabled={isBooked}
-                            style={{
-                              ...styles.timeSlot,
-                              ...(isBooked ? styles.timeSlotDisabled : {}),
-                              ...(selectedTime === slot ? styles.timeSlotActive : {})
-                            }}
+                            className={`booking-time-slot ${isBooked ? 'booking-time-slot-disabled' : ''} ${selectedTime === slot ? 'booking-time-slot-active' : ''}`}
                           >
                             {slot}
                           </button>
@@ -490,55 +472,55 @@ const BookingPage = () => {
         )}
 
         {step === 4 && (
-          <div style={styles.stepContainer}>
-            <button onClick={() => setStep(3)} style={styles.backBtn}>← Retour</button>
-            <h2 style={styles.stepTitle}>👤 Vos informations</h2>
+          <div className="booking-step-container">
+            <button onClick={() => setStep(3)} className="booking-back-btn">← Retour</button>
+            <h2 className="booking-step-title">👤 Vos informations</h2>
             
-            <div style={styles.form}>
-              <div style={styles.formGroup}>
-                <label style={styles.label}>Nom complet *</label>
+            <div className="booking-form">
+              <div className="booking-form-group">
+                <label className="booking-label">Nom complet *</label>
                 <input
                   type="text"
                   value={clientData.name}
                   onChange={(e) => setClientData({ ...clientData, name: e.target.value })}
-                  style={styles.input}
+                  className="booking-input"
                   placeholder="Jean Dupont"
                 />
               </div>
 
-              <div style={styles.formGroup}>
-                <label style={styles.label}>Email *</label>
+              <div className="booking-form-group">
+                <label className="booking-label">Email *</label>
                 <input
                   type="email"
                   value={clientData.email}
                   onChange={(e) => setClientData({ ...clientData, email: e.target.value })}
-                  style={styles.input}
+                  className="booking-input"
                   placeholder="jean.dupont@email.com"
                 />
               </div>
 
-              <div style={styles.formGroup}>
-                <label style={styles.label}>Téléphone</label>
+              <div className="booking-form-group">
+                <label className="booking-label">Téléphone</label>
                 <input
                   type="tel"
                   value={clientData.phone}
                   onChange={(e) => setClientData({ ...clientData, phone: e.target.value })}
-                  style={styles.input}
+                  className="booking-input"
                   placeholder="06 12 34 56 78"
                 />
               </div>
 
-              <div style={styles.formGroup}>
-                <label style={styles.label}>Notes (optionnel)</label>
+              <div className="booking-form-group">
+                <label className="booking-label">Notes (optionnel)</label>
                 <textarea
                   value={clientData.notes}
                   onChange={(e) => setClientData({ ...clientData, notes: e.target.value })}
-                  style={{...styles.input, minHeight: '80px'}}
+                  className="booking-input" style={{minHeight: '80px'}}
                   placeholder="Demandes spéciales..."
                 />
               </div>
 
-              <button onClick={handleBooking} disabled={booking} style={styles.confirmBtn}>
+              <button onClick={handleBooking} disabled={booking} className="booking-confirm-btn">
                 {booking ? '⏳ Réservation en cours...' : '✨ Confirmer le rendez-vous'}
               </button>
             </div>
@@ -546,11 +528,11 @@ const BookingPage = () => {
         )}
 
         {step === 5 && (
-          <div style={styles.stepContainer}>
-            <div style={styles.successCard}>
-              <div style={styles.successIcon}>✅</div>
-              <h2 style={styles.successTitle}>Rendez-vous confirmé !</h2>
-              <div style={styles.successDetails}>
+          <div className="booking-step-container">
+            <div className="booking-success-card">
+              <div className="booking-success-icon">✅</div>
+              <h2 className="booking-success-title">Rendez-vous confirmé !</h2>
+              <div className="booking-success-details">
                 <p><strong>Service :</strong> {selectedService.name}</p>
                 {selectedEmployee && (
                   <p><strong>Employé :</strong> {selectedEmployee.name}</p>
@@ -560,10 +542,10 @@ const BookingPage = () => {
                 <p><strong>Durée :</strong> {selectedService.duration} minutes</p>
                 <p><strong>Prix :</strong> {selectedService.price}€</p>
               </div>
-              <p style={styles.successMessage}>
+              <p className="booking-success-message">
                 📧 Un email de confirmation a été envoyé à {clientData.email}
               </p>
-              <button onClick={() => window.location.reload()} style={styles.newBookingBtn}>
+              <button onClick={() => window.location.reload()} className="booking-new-booking-btn">
                 Nouvelle réservation
               </button>
             </div>
@@ -572,427 +554,12 @@ const BookingPage = () => {
       </div>
 
       {message && (
-        <div style={styles.toast}>
+        <div className="booking-toast">
           {message}
         </div>
       )}
     </div>
   )
-}
-
-const styles = {
-  container: {
-    minHeight: '100vh',
-    background: 'linear-gradient(135deg, #1a1a1a 0%, #2d3748 50%, #1a202c 100%)',
-    color: '#fff',
-    fontFamily: "'Inter', sans-serif"
-  },
-  header: {
-    position: 'relative',
-    padding: '60px 20px 40px',
-    textAlign: 'center',
-    overflow: 'hidden'
-  },
-  headerGradient: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    height: '200px',
-    background: 'linear-gradient(135deg, #3b82f6 0%, #10b981 100%)',
-    opacity: 0.2,
-    filter: 'blur(60px)'
-  },
-  salonName: {
-    position: 'relative',
-    fontSize: 'clamp(28px, 6vw, 42px)',
-    fontWeight: '800',
-    background: 'linear-gradient(135deg, #3b82f6 0%, #10b981 100%)',
-    WebkitBackgroundClip: 'text',
-    WebkitTextFillColor: 'transparent',
-    marginBottom: '10px'
-  },
-  salonInfo: {
-    position: 'relative',
-    fontSize: 'clamp(14px, 3vw, 16px)',
-    color: '#9ca3af',
-    margin: 0
-  },
-  progressBar: {
-    display: 'flex',
-    justifyContent: 'center',
-    gap: 'clamp(10px, 3vw, 15px)',
-    padding: '20px',
-    maxWidth: '400px',
-    margin: '0 auto',
-    flexWrap: 'wrap'
-  },
-  progressStep: {
-    width: 'clamp(40px, 10vw, 50px)',
-    height: 'clamp(40px, 10vw, 50px)',
-    borderRadius: '50%',
-    background: '#374151',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    fontSize: 'clamp(16px, 4vw, 20px)',
-    fontWeight: 'bold',
-    color: '#6b7280',
-    transition: 'all 0.3s'
-  },
-  progressStepActive: {
-    background: 'linear-gradient(135deg, #3b82f6 0%, #10b981 100%)',
-    color: '#fff',
-    transform: 'scale(1.1)',
-    boxShadow: '0 0 20px rgba(59, 130, 246, 0.5)'
-  },
-  content: {
-    maxWidth: '900px',
-    margin: '0 auto',
-    padding: '20px'
-  },
-  stepContainer: {
-    animation: 'fadeIn 0.5s ease-in'
-  },
-  stepTitle: {
-    fontSize: 'clamp(24px, 5vw, 32px)',
-    fontWeight: '700',
-    marginBottom: '30px',
-    textAlign: 'center'
-  },
-  servicesGrid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-    gap: '20px'
-  },
-  serviceCard: {
-    backgroundColor: '#374151',
-    padding: '30px',
-    borderRadius: '20px',
-    cursor: 'pointer',
-    transition: 'all 0.3s',
-    border: '2px solid transparent'
-  },
-  serviceCardActive: {
-    border: '2px solid #3b82f6',
-    background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(16, 185, 129, 0.1) 100%)',
-    transform: 'translateY(-5px)',
-    boxShadow: '0 10px 30px rgba(59, 130, 246, 0.3)'
-  },
-  serviceIcon: {
-    fontSize: 'clamp(36px, 8vw, 48px)',
-    marginBottom: '15px'
-  },
-  serviceName: {
-    fontSize: 'clamp(20px, 4vw, 24px)',
-    fontWeight: '600',
-    marginBottom: '15px'
-  },
-  serviceDetails: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    fontSize: 'clamp(14px, 3vw, 16px)',
-    color: '#9ca3af',
-    flexWrap: 'wrap',
-    gap: '10px'
-  },
-  serviceDuration: {
-    color: '#9ca3af'
-  },
-  servicePrice: {
-    fontSize: 'clamp(20px, 4vw, 24px)',
-    fontWeight: '700',
-    background: 'linear-gradient(135deg, #3b82f6 0%, #10b981 100%)',
-    WebkitBackgroundClip: 'text',
-    WebkitTextFillColor: 'transparent'
-  },
-  dateTimeSection: {
-    backgroundColor: '#374151',
-    padding: 'clamp(20px, 4vw, 30px)',
-    borderRadius: '20px'
-  },
-  label: {
-    display: 'block',
-    marginBottom: '10px',
-    fontSize: 'clamp(14px, 3vw, 16px)',
-    fontWeight: '600',
-    color: '#9ca3af'
-  },
-  dateInput: {
-    width: '100%',
-    padding: 'clamp(12px, 3vw, 15px)',
-    fontSize: 'clamp(14px, 3vw, 16px)',
-    backgroundColor: '#1f2937',
-    border: '2px solid #4b5563',
-    borderRadius: '10px',
-    color: '#fff',
-    marginBottom: '30px',
-    outline: 'none',
-    boxSizing: 'border-box',
-    colorScheme: 'dark',
-    WebkitAppearance: 'none',
-    MozAppearance: 'none',
-    appearance: 'none',
-    backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'20\' height=\'20\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'white\' stroke-width=\'2\'%3E%3Crect x=\'3\' y=\'4\' width=\'18\' height=\'18\' rx=\'2\' ry=\'2\'%3E%3C/rect%3E%3Cline x1=\'16\' y1=\'2\' x2=\'16\' y2=\'6\'%3E%3C/line%3E%3Cline x1=\'8\' y1=\'2\' x2=\'8\' y2=\'6\'%3E%3C/line%3E%3Cline x1=\'3\' y1=\'10\' x2=\'21\' y2=\'10\'%3E%3C/line%3E%3C/svg%3E")',
-    backgroundRepeat: 'no-repeat',
-    backgroundPosition: 'right 15px center',
-    backgroundSize: '20px',
-    paddingRight: '45px'
-  },
-  timeSlotsGrid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fill, minmax(80px, 1fr))',
-    gap: '10px',
-    marginTop: '15px'
-  },
-  timeSlot: {
-    padding: 'clamp(12px, 3vw, 15px)',
-    backgroundColor: '#1f2937',
-    border: '2px solid #4b5563',
-    borderRadius: '10px',
-    color: '#fff',
-    cursor: 'pointer',
-    transition: 'all 0.3s',
-    fontSize: 'clamp(14px, 3vw, 16px)',
-    fontWeight: '600'
-  },
-  timeSlotActive: {
-    background: 'linear-gradient(135deg, #3b82f6 0%, #10b981 100%)',
-    border: '2px solid #3b82f6',
-    transform: 'scale(1.05)'
-  },
-  noSlots: {
-    textAlign: 'center',
-    color: '#9ca3af',
-    padding: '20px'
-  },
-  employeesGrid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-    gap: '20px'
-  },
-  employeeCard: {
-    backgroundColor: '#374151',
-    padding: '20px',
-    borderRadius: '15px',
-    cursor: 'pointer',
-    transition: 'all 0.3s',
-    border: '2px solid transparent',
-    textAlign: 'center'
-  },
-  employeeCardActive: {
-    border: '2px solid #3b82f6',
-    background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(16, 185, 129, 0.1) 100%)',
-    transform: 'translateY(-5px)',
-    boxShadow: '0 10px 30px rgba(59, 130, 246, 0.3)'
-  },
-  employeeAvatar: {
-    position: 'relative',
-    width: '80px',
-    height: '80px',
-    margin: '0 auto 15px',
-    borderRadius: '50%',
-    overflow: 'hidden'
-  },
-  employeePhoto: {
-    width: '100%',
-    height: '100%',
-    objectFit: 'cover'
-  },
-  employeeInitial: {
-    width: '100%',
-    height: '100%',
-    background: 'linear-gradient(135deg, #3b82f6 0%, #10b981 100%)',
-    alignItems: 'center',
-    justifyContent: 'center',
-    fontSize: '32px',
-    fontWeight: 'bold',
-    color: '#fff'
-  },
-  employeeName: {
-    fontSize: '18px',
-    fontWeight: '600',
-    marginBottom: '5px',
-    color: '#fff'
-  },
-  employeeSpecialty: {
-    background: 'linear-gradient(135deg, #3b82f6 0%, #10b981 100%)',
-    padding: '4px 12px',
-    borderRadius: '15px',
-    fontSize: '12px',
-    fontWeight: '600',
-    color: '#fff',
-    display: 'inline-block'
-  },
-  noEmployeeOption: {
-    backgroundColor: '#2d3748',
-    border: '2px dashed #4b5563'
-  },
-  noEmployeeIcon: {
-    fontSize: '32px',
-    marginBottom: '15px'
-  },
-  noEmployees: {
-    textAlign: 'center',
-    padding: '40px 20px',
-    backgroundColor: '#374151',
-    borderRadius: '15px',
-    gridColumn: '1 / -1'
-  },
-  noEmployeesSubtext: {
-    color: '#9ca3af',
-    fontSize: '14px',
-    marginTop: '10px'
-  },
-  form: {
-    backgroundColor: '#374151',
-    padding: 'clamp(20px, 4vw, 30px)',
-    borderRadius: '20px'
-  },
-  formGroup: {
-    marginBottom: '20px'
-  },
-  input: {
-    width: '100%',
-    padding: 'clamp(12px, 3vw, 15px)',
-    fontSize: 'clamp(14px, 3vw, 16px)',
-    backgroundColor: '#1f2937',
-    border: '2px solid #4b5563',
-    borderRadius: '10px',
-    color: '#fff',
-    outline: 'none',
-    boxSizing: 'border-box'
-  },
-  confirmBtn: {
-    width: '100%',
-    padding: 'clamp(16px, 4vw, 20px)',
-    fontSize: 'clamp(16px, 3vw, 18px)',
-    fontWeight: '700',
-    background: 'linear-gradient(135deg, #3b82f6 0%, #10b981 100%)',
-    border: 'none',
-    borderRadius: '15px',
-    color: '#fff',
-    cursor: 'pointer',
-    transition: 'all 0.3s',
-    marginTop: '20px'
-  },
-  successCard: {
-    backgroundColor: '#374151',
-    padding: 'clamp(30px, 6vw, 50px) clamp(20px, 4vw, 30px)',
-    borderRadius: '20px',
-    textAlign: 'center'
-  },
-  successIcon: {
-    fontSize: 'clamp(60px, 12vw, 80px)',
-    marginBottom: '20px'
-  },
-  successTitle: {
-    fontSize: 'clamp(24px, 5vw, 32px)',
-    fontWeight: '700',
-    marginBottom: '30px',
-    background: 'linear-gradient(135deg, #10b981 0%, #34d399 100%)',
-    WebkitBackgroundClip: 'text',
-    WebkitTextFillColor: 'transparent'
-  },
-  successDetails: {
-    textAlign: 'left',
-    backgroundColor: '#1f2937',
-    padding: 'clamp(15px, 3vw, 20px)',
-    borderRadius: '10px',
-    marginBottom: '20px',
-    lineHeight: '2',
-    fontSize: 'clamp(14px, 3vw, 16px)'
-  },
-  successMessage: {
-    color: '#9ca3af',
-    marginBottom: '30px',
-    fontSize: 'clamp(14px, 3vw, 16px)'
-  },
-  newBookingBtn: {
-    padding: 'clamp(12px, 3vw, 15px) clamp(30px, 6vw, 40px)',
-    background: 'linear-gradient(135deg, #3b82f6 0%, #10b981 100%)',
-    border: 'none',
-    borderRadius: '10px',
-    color: '#fff',
-    fontSize: 'clamp(14px, 3vw, 16px)',
-    fontWeight: '600',
-    cursor: 'pointer'
-  },
-  backBtn: {
-    padding: '10px 20px',
-    backgroundColor: '#4b5563',
-    border: 'none',
-    borderRadius: '10px',
-    color: '#fff',
-    cursor: 'pointer',
-    marginBottom: '20px',
-    fontSize: 'clamp(12px, 2.5vw, 14px)'
-  },
-  installBanner: {
-    position: 'fixed',
-    bottom: '20px',
-    left: '50%',
-    transform: 'translateX(-50%)',
-    backgroundColor: '#3b82f6',
-    padding: 'clamp(12px, 3vw, 15px) clamp(20px, 4vw, 30px)',
-    borderRadius: '15px',
-    boxShadow: '0 8px 20px rgba(59, 130, 246, 0.4)',
-    zIndex: 1000,
-    display: 'flex',
-    alignItems: 'center',
-    gap: 'clamp(15px, 3vw, 20px)',
-    maxWidth: '90%',
-    fontSize: 'clamp(13px, 2.5vw, 15px)',
-    flexWrap: 'wrap',
-    justifyContent: 'center'
-  },
-  installBtn: {
-    padding: 'clamp(8px, 2vw, 10px) clamp(15px, 3vw, 20px)',
-    backgroundColor: '#fff',
-    color: '#3b82f6',
-    border: 'none',
-    borderRadius: '8px',
-    fontWeight: 'bold',
-    cursor: 'pointer',
-    fontSize: 'clamp(12px, 2.5vw, 14px)'
-  },
-  closeBtn: {
-    backgroundColor: 'transparent',
-    color: '#fff',
-    border: 'none',
-    cursor: 'pointer',
-    fontSize: 'clamp(18px, 4vw, 20px)'
-  },
-  toast: {
-    position: 'fixed',
-    top: '20px',
-    right: '20px',
-    backgroundColor: '#374151',
-    padding: 'clamp(12px, 3vw, 15px) clamp(20px, 4vw, 25px)',
-    borderRadius: '10px',
-    boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
-    zIndex: 1000,
-    fontSize: 'clamp(13px, 2.5vw, 15px)',
-    maxWidth: '90%'
-  },
-  loader: {
-    textAlign: 'center',
-    padding: '100px 20px',
-    fontSize: 'clamp(20px, 4vw, 24px)',
-    color: '#9ca3af'
-  },
-  error: {
-    textAlign: 'center',
-    padding: '100px 20px',
-    fontSize: 'clamp(20px, 4vw, 24px)',
-    color: '#ef4444'
-  },
-  timeSlotDisabled: {
-    opacity: 0.5,
-    backgroundColor: '#6b7280',
-    cursor: 'not-allowed',
-    border: '2px solid #4b5563'
-  }
 }
 
 export default BookingPage
